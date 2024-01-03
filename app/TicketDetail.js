@@ -8,7 +8,7 @@ import {
   ScrollView,
   Platform,
   DeviceEventEmitter,
-  Text, Dimensions, Alert, TouchableOpacity, TouchableWithoutFeedback, Modal
+  Text, Dimensions, TouchableOpacity, TouchableWithoutFeedback, Modal
 } from 'react-native';
 
 import Toolbar from './components/Toolbar';
@@ -62,6 +62,8 @@ import TicketSelectExecutors from "./TicketSelectExecutors";
 import { ImageViewer } from "./ImageViewer";
 import PhotoShowView from "./components/assets/PhotoShowView";
 import privilegeHelper, { CodeMap } from "./utils/privilegeHelper";
+import Colors from "../../../app/utils/const/Colors";
+import SndAlert from "../../../app/utils/components/SndAlert";
 // import Share from "react-native-share";
 
 class Avatar extends Component {
@@ -105,9 +107,22 @@ export default class TicketDetail extends Component {
     this.state = { toolbarOpacity: 0, showToolbar: false, forceStoped: false, };
   }
 
+  getTicketTypeLable(ticketType) {
+    let localTypes = localStr('lang_ticket_filter_types')
+    switch (ticketType) {
+      case 2:
+        return localTypes[2]
+      case 9:
+        return localTypes[0]
+      case 10:
+        return localTypes[1]
+    }
+    return ''
+  }
+
   _getAssetView() {
     let rowData = this.state.rowData;
-    var type = rowData.ticketTypeLabel;//localStr('lang_ticket_diagnose')//rowData.get('TicketType');
+    var type = this.getTicketTypeLable(rowData.ticketType);//localStr('lang_ticket_diagnose')//rowData.get('TicketType');
 
     var startTime = moment(rowData.startTime).format('MM-DD'),
       endTime = moment(rowData.endTime).format('MM-DD');
@@ -125,10 +140,10 @@ export default class TicketDetail extends Component {
       executor = (
         <View style={{ flex: 1, flexDirection: 'row', marginLeft: 0, marginTop: 8 }}>
           <View style={{ marginTop: 3, }}>
-            <Icon type={'icon_person'} size={13} color={'#999'} />
+            <Icon type={'icon_person'} size={13} color={Colors.seTextPrimary} />
           </View>
           <View style={{ flex: 1, marginLeft: 4, }}>
-            <Text numberOfLines={10} style={[{ fontSize: 13, color: '#999', lineHeight: 20, }]}>
+            <Text numberOfLines={10} style={[{ fontSize: 13, color: Colors.seTextPrimary, lineHeight: 20, }]}>
               {names.join('、')}
             </Text>
           </View>
@@ -136,35 +151,35 @@ export default class TicketDetail extends Component {
       );
     }
     return (
-      <View style={{ paddingBottom: 14, backgroundColor: 'white' }}>
+      <View style={{ paddingBottom: 14, backgroundColor: Colors.seBgContainer,margin:10,marginBottom:0,borderRadius:12 }}>
         <View style={{
           paddingTop: 15, paddingBottom: 12, paddingLeft: 16,
           flexDirection: 'row', alignItems: 'center', paddingRight: 16,
         }}>
-          <Text numberOfLines={1} style={{ fontSize: 16, color: '#333', fontWeight: '600', flexShrink: 1 }}>{rowData.title}</Text>
+          <Text numberOfLines={1} style={{ fontSize: 16, color: Colors.seTextTitle, fontWeight: '600', flexShrink: 1 }}>{rowData.title}</Text>
           <View style={{
             borderRadius: 10, paddingVertical: 2, paddingHorizontal: 8,
-            borderColor: '#219bfd', borderWidth: 1, marginLeft: 8,
+            borderColor: Colors.seBrandNomarl, borderWidth: 1, marginLeft: 8,
           }}>
-            <Text style={{ fontSize: 11, color: '#219bfd' }}>{type}</Text>
+            <Text style={{ fontSize: 11, color: Colors.seTextTitle }}>{type}</Text>
           </View>
         </View>
         <View style={styles.moreContent}>
-          <Text style={{ fontSize: 15, color: '#333' }}>{localStr('lang_ticket_detail_assets') + ':' + assetNames}</Text>
+          <Text style={{ fontSize: 15, color: Colors.seTextPrimary }}>{localStr('lang_ticket_detail_assets') + ':' + assetNames}</Text>
         </View>
 
         <View style={{ paddingHorizontal: 16, backgroundColor: '' }}>
           <View style={{ flex: 1, flexDirection: 'row' }}>
             <View style={{ minWidth: 115, flexDirection: 'row' }}>
-              <Icon type={'icon_date'} size={13} color={'#999'} />
+              <Icon type={'icon_date'} size={13} color={Colors.seTextPrimary} />
               <View style={{ flex: 1, marginLeft: 4, }}>
-                <Text numberOfLines={1} style={[{ fontSize: 13, color: '#999' }]}>{`${startTime} ${localStr('lang_ticket_to')} ${endTime}`}</Text>
+                <Text numberOfLines={1} style={[{ fontSize: 13, color: Colors.seTextPrimary }]}>{`${startTime} ${localStr('lang_ticket_to')} ${endTime}`}</Text>
               </View>
             </View>
             <View style={{ flex: 1, flexDirection: 'row', marginLeft: 21, }}>
-              <Icon style={{ marginTop: 2 }} type={'arrow_location'} size={11} color={'#999'} />
+              <Icon style={{ marginTop: 2 }} type={'arrow_location'} size={11} color={Colors.seTextPrimary} />
               <View style={{ flex: 1, marginLeft: 4, }}>
-                <Text numberOfLines={1} style={[{ color: '#999', fontSize: 13 }]}>{locationNames}</Text>
+                <Text numberOfLines={1} style={[{ color: Colors.seTextPrimary, fontSize: 13 }]}>{locationNames}</Text>
               </View>
             </View>
           </View>
@@ -176,16 +191,18 @@ export default class TicketDetail extends Component {
   _getTaskView() {
     let rowData = this.state.rowData;
     var content = rowData.content;
+
     if (content) {
       content = content.replace(/(^\s*)|(\s*$)/g, "");
     }
+
     return (
-      <View style={{ paddingBottom: 0, backgroundColor: 'white' }}>
+      <View style={{ paddingBottom: 0, backgroundColor: Colors.seBgContainer,borderRadius:12,margin:10,marginBottom:0 }}>
         <View style={{
           paddingTop: 16, paddingBottom: 12, paddingLeft: 16,
           flexDirection: 'row', alignItems: 'center'
         }}>
-          <Text style={{ fontSize: 16, color: '#333', fontWeight: '600' }}>{localStr('lang_ticket_detail_task')}</Text>
+          <Text style={{ fontSize: 16, color: Colors.seTextTitle, fontWeight: '600' }}>{localStr('lang_ticket_detail_task')}</Text>
         </View>
         <MoreContent style={styles.moreContent} content={content || ''} maxLine={5} />
       </View>
@@ -235,13 +252,13 @@ export default class TicketDetail extends Component {
     let createDate = moment(rowData.createTime).format('YYYY-MM-DD HH:mm:ss');
     return (
       <View style={{
-        paddingBottom: 16, paddingTop: 16, paddingLeft: 16, paddingRight: 16, backgroundColor: LIST_BG, marginTop: -2
+        paddingBottom: 16, paddingTop: 16, paddingLeft: 16, paddingRight: 16, backgroundColor: Colors.seBgLayout, marginTop: -2
         , alignItems: 'center'
       }}>
-        <Text numberOfLines={1} style={{ fontSize: 13, color: '#999' }}>
+        <Text numberOfLines={1} style={{ fontSize: 13, color: Colors.seTextDisabled }}>
           {`${localStr('lang_ticket_detail_ticketId')}:${strId}`}
         </Text>
-        <Text numberOfLines={1} style={{ fontSize: 13, color: '#999', marginTop: 6 }}>
+        <Text numberOfLines={1} style={{ fontSize: 13, color: Colors.seTextDisabled, marginTop: 6 }}>
           {`${rowData.createUserName} ${localStr('lang_ticket_detail_create_time')}${createDate}`}
         </Text>
       </View>
@@ -251,7 +268,7 @@ export default class TicketDetail extends Component {
   _getTab() {
     return (
       <View style={{ height: 48, justifyContent: 'flex-end' }}>
-        <Text style={{ marginBottom: 8, fontSize: 16, color: '#333', fontWeight: '600' }}>{`${localStr('lang_ticket_detail_log')}(${this.state.rowData.ticketLogs.length})`}</Text>
+        <Text style={{ marginBottom: 8, fontSize: 16, color: Colors.seTextTitle, fontWeight: '600' }}>{`${localStr('lang_ticket_detail_log')}(${this.state.rowData.ticketLogs.length})`}</Text>
       </View>
     )
   }
@@ -282,9 +299,9 @@ export default class TicketDetail extends Component {
       }, {
         title: localStr('lang_ticket_detail_del_log'),
         click: () => {
-          Alert.alert(
-            '',
+          SndAlert.alert(
             localStr('lang_ticket_log_del_confirm'),
+            '',
             [
               { text: localStr('lang_ticket_filter_cancel'), onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
               {
@@ -299,7 +316,7 @@ export default class TicketDetail extends Component {
                       rowData.ticketLogs = [].concat(rowData.ticketLogs);
                       this.setState({ rowData })
                     } else {
-                      Alert.alert(localStr('lang_alert_title'), res.msg);
+                      SndAlert.alert(localStr('lang_alert_title'), res.msg);
                     }
                   })
                 }
@@ -341,22 +358,22 @@ export default class TicketDetail extends Component {
             if (this.state.isExecutor)
               this.clickLog(log, index);
           }}>
-          <View style={{ paddingTop: 10, borderBottomColor: '#f2f2f2', borderBottomWidth: 1 }} key={index}>
-            <Text style={{ fontSize: 15, lineHeight: 24, color: '#666' }}>{log.content}</Text>
+          <View style={{ paddingTop: 10, borderBottomColor: Colors.seBorderSplit, borderBottomWidth: 1 }} key={index}>
+            <Text style={{ fontSize: 15, lineHeight: 24, color: Colors.seTextTitle }}>{log.content}</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
               {imgs}
             </View>
-            <Text style={{ fontSize: 12, color: '#b2b2b2', marginVertical: 10 }}>{`${log.userName}  ${log.createTime}`}</Text>
+            <Text style={{ fontSize: 12, color: Colors.seTextPrimary, marginVertical: 10 }}>{`${log.userName}  ${log.createTime}`}</Text>
           </View>
         </TouchableWithoutFeedback>
 
       )
     })
     return (
-      <View style={{ backgroundColor: '#fff', marginTop: 10 }}>
+      <View style={{ backgroundColor: Colors.seBgContainer, margin: 10,marginBottom:0,borderRadius:12 }}>
         <View style={{ marginLeft: 16 }}>
           {this._getTab()}
-          <View style={{ height: 1, backgroundColor: LINE }} />
+          <View style={{ height: 1, backgroundColor: Colors.seBorderSplit }} />
           {arr}
         </View>
 
@@ -365,9 +382,9 @@ export default class TicketDetail extends Component {
   }
 
   _closeTicket() {
-    Alert.alert(
-      '',
+    SndAlert.alert(
       localStr('lang_ticket_close_confirm'),
+      '',
       [
         { text: localStr('lang_ticket_filter_cancel'), onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
         {
@@ -379,7 +396,7 @@ export default class TicketDetail extends Component {
                 this.showToast(localStr('lang_ticket_close_toast'))
                 this._loadTicketDetail();
               } else {
-                Alert.alert(localStr('lang_alert_title'), ret.msg);
+                SndAlert.alert(localStr('lang_alert_title'), ret.msg);
               }
             })
           }
@@ -388,7 +405,7 @@ export default class TicketDetail extends Component {
 
   _renderSubmittedButton() {
     return (
-      <Bottom borderColor={'#f2f2f2'} height={54} backgroundColor={'#fff'}>
+      <Bottom borderColor={Colors.seBorderSplit} height={54} backgroundColor={Colors.seBgContainer}>
 
         {/*<Button*/}
         {/*  style={[styles.button,{borderWidth:1,borderColor:'#888',*/}
@@ -402,14 +419,14 @@ export default class TicketDetail extends Component {
         {/*  onClick={() => this._rejectTicket()} />*/}
         <Button
           style={[styles.button, {
-            backgroundColor: GREEN,
+            backgroundColor: Colors.seBrandNomarl,
             marginLeft: 16,
             flex: 1,
             borderRadius: 2,
           }]}
           textStyle={{
             fontSize: 16,
-            color: '#ffffff'
+            color: Colors.seTextInverse
           }}
           text={localStr('lang_ticket_detail_approved')}
           onClick={() => this._closeTicket()} />
@@ -424,7 +441,7 @@ export default class TicketDetail extends Component {
         this.showToast(localStr('lang_ticket_execute_toast'))
         this._loadTicketDetail();
       } else {
-        Alert.alert(localStr('lang_alert_title'), ret.msg);
+        SndAlert.alert(localStr('lang_alert_title'), ret.msg);
       }
     })
   }
@@ -446,9 +463,9 @@ export default class TicketDetail extends Component {
   }
 
   _doIgnore() {
-    Alert.alert(
-      '',
+    SndAlert.alert(
       localStr('lang_ticket_detail_ignore_confirm'),
+      '',
       [
         { text: localStr('lang_ticket_filter_cancel'), onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
         {
@@ -460,7 +477,7 @@ export default class TicketDetail extends Component {
                 this.props.ticketChanged && this.props.ticketChanged();
                 this._loadTicketDetail();
               } else {
-                Alert.alert(localStr('lang_alert_title'), ret.msg);
+                SndAlert.alert(localStr('lang_alert_title'), ret.msg);
               }
             })
           }
@@ -471,7 +488,7 @@ export default class TicketDetail extends Component {
   _submitTicket() {
     let ticketLogs = this.state.rowData.ticketLogs;
     if (!ticketLogs || ticketLogs.length === 0) {
-      Alert.alert(localStr('lang_alert_title'), localStr('lang_ticket_submit_invalid'));
+      SndAlert.alert(localStr('lang_alert_title'), localStr('lang_ticket_submit_invalid'));
       return;
     }
     apiSubmitTicket({ id: this.state.rowData.id }).then(ret => {
@@ -484,7 +501,7 @@ export default class TicketDetail extends Component {
         // rowData.ticketState = STATE_PENDING_AUDIT;
         // this.setState({rowData})
       } else {
-        Alert.alert(localStr('lang_alert_title'), ret.msg);
+        SndAlert.alert(localStr('lang_alert_title'), ret.msg);
       }
     })
   }
@@ -498,8 +515,8 @@ export default class TicketDetail extends Component {
           this._writeLog();
         }}>
         <View style={{ minWidth: 50, minHeight: 50, justifyContent: 'center', alignItems: 'center' }}>
-          <Icon type='icon_ticket_log' size={16} color={'#333'} />
-          <Text style={{ fontSize: 12, color: '#333', marginTop: 3 }}>{localStr('lang_ticket_detail_write_log')}</Text>
+          <Icon type='icon_ticket_log' size={16} color={Colors.seTextTitle} />
+          <Text style={{ fontSize: 10, color: Colors.seTextTitle, marginTop: 3 }}>{localStr('lang_ticket_detail_write_log')}</Text>
         </View>
       </TouchFeedback>
     );
@@ -507,25 +524,25 @@ export default class TicketDetail extends Component {
       let btnLabel = localStr('lang_ticket_detail_begin_execute');
       //还需要判断是否是创建者和有工单执行权限
       return (
-        <Bottom borderColor={'#f2f2f2'} height={54} backgroundColor={'#fff'}>
+        <Bottom borderColor={Colors.seBorderSplit} height={54} backgroundColor={Colors.seBgContainer}>
           <Button
             style={[styles.button, {
-              borderWidth: 1, borderColor: '#888',
-              backgroundColor: '#fff', marginLeft: 16, flex: 1, marginRight: 0
+              borderWidth: 1, borderColor: Colors.seBorderSplit,
+              backgroundColor: Colors.seBgColor, marginLeft: 16, flex: 1, marginRight: 0
             }]}
             textStyle={{
               fontSize: 16,
-              color: '#888'
+              color: Colors.seTextTitle
             }}
             text={localStr('lang_ticket_detail_ignore')}
             onClick={() => this._doIgnore()} />
           <Button
             style={[styles.button, {
-              backgroundColor: GREEN, marginLeft: 16, flex: 2
+              backgroundColor: Colors.seBrandNomarl, marginLeft: 16, flex: 2
             }]}
             textStyle={{
               fontSize: 16,
-              color: '#ffffff'
+              color: Colors.seTextInverse
             }}
             text={btnLabel} onClick={this._executeTicket} />
         </Bottom>
@@ -538,7 +555,7 @@ export default class TicketDetail extends Component {
     //执行中和已驳回操作一样
     if (this.state.isExecutor && (status === STATE_STARTING || status === STATE_REJECTED) && privilegeHelper.hasAuth(CodeMap.OMTicketExecute) && !isScollView) {
       return (
-        <Bottom borderColor={'#f2f2f2'} height={54} backgroundColor={'#fff'}>
+        <Bottom borderColor={Colors.seBorderSplit} height={54} backgroundColor={Colors.seBgContainer}>
           <View style={{ flexDirection: 'row', flex: 1 }}>
             <View style={{ flex: 1 }}>
               {logButton}
@@ -546,13 +563,13 @@ export default class TicketDetail extends Component {
           </View>
           <Button
             style={[styles.button, {
-              backgroundColor: GREEN,
+              backgroundColor: Colors.seBrandNomarl,
               marginLeft: 0,
               flex: 3,
             }]}
             textStyle={{
               fontSize: 16,
-              color: '#ffffff'
+              color: Colors.seTextInverse
             }}
             text={localStr('lang_ticket_detail_submit_ticket')}
             onClick={() => this._submitTicket()} />
@@ -631,7 +648,7 @@ export default class TicketDetail extends Component {
                           this._loadTicketDetail();
                         } else {
                           //出错信息
-                          Alert.alert(localStr('lang_alert_title'), ret.msg)
+                          SndAlert.alert(localStr('lang_alert_title'), ret.msg)
                         }
                       })
                     },
@@ -663,7 +680,7 @@ export default class TicketDetail extends Component {
                           this.props.ticketChanged && this.props.ticketChanged();
                           this._loadTicketDetail();
                         } else {
-                          Alert.alert(localStr('lang_alert_title'), res.msg)
+                          SndAlert.alert(localStr('lang_alert_title'), res.msg)
                         }
                       })
                     },
@@ -775,13 +792,13 @@ export default class TicketDetail extends Component {
     let RejectUser = this.state.rejectData.userName
     let rejectTime = moment(this.state.rejectData.createTime).format('YYYY-MM-DD HH:mm:ss');
     return (
-      <View style={{ backgroundColor: '#fff', padding: 16, marginTop: 10, marginBottom: 10 }}>
+      <View style={{ backgroundColor: Colors.seWarningBg, padding: 16, }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ fontSize: 16, color: '#333', fontWeight: '600' }}>{localStr('lang_ticket_detail_reject_reason')}</Text>
+          <Text style={{ fontSize: 16, color: Colors.seTextTitle, fontWeight: '600' }}>{localStr('lang_ticket_detail_reject_reason')}</Text>
         </View>
-        <View style={{ height: 1, backgroundColor: '#f2f2f2', marginRight: -16, marginTop: 16, marginBottom: 12 }} />
-        <Text style={{ fontSize: 16, color: '#666', lineHeight: 28 }}>{reason}</Text>
-        <Text style={{ fontSize: 12, color: '#b2b2b2', marginTop: 10 }}>{`${RejectUser}  ${rejectTime}`}</Text>
+        <View style={{ height: 1, backgroundColor: Colors.seBorderSplit, marginRight: -16, marginTop: 16, marginBottom: 12 }} />
+        <Text style={{ fontSize: 16, color: Colors.seTextPrimary, lineHeight: 28 }}>{reason}</Text>
+        <Text style={{ fontSize: 12, color: Colors.seTextPrimary, marginTop: 10 }}>{`${RejectUser}  ${rejectTime}`}</Text>
       </View>
     )
   }
@@ -820,7 +837,7 @@ export default class TicketDetail extends Component {
   render() {
     if (!this.state.isFetching && this.state.errorMessage) {
       return (
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <View style={{ flex: 1, backgroundColor: Colors.seBgLayout }}>
           {this._getToolbar(this.props.rowData)}
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{ fontSize: 17, color: GRAY }}>{this.state.errorMessage}</Text>
@@ -830,7 +847,7 @@ export default class TicketDetail extends Component {
     }
     if (this.state.isFetching || !this.state.rowData) {
       return (
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <View style={{ flex: 1, backgroundColor: Colors.seBgLayout }}>
           {this._getToolbar(this.state.rowData)}
           <Loading />
         </View>
@@ -848,7 +865,7 @@ export default class TicketDetail extends Component {
     if (bottomButton) {
       if (Platform.OS === 'ios') {
         bottomButton = (
-          <View style={{ backgroundColor: '#fff' }}>
+          <View style={{ backgroundColor: Colors.seBgContainer }}>
             <View style={{ marginBottom: (isPhoneX() ? 34 : 0) }}>
               {bottomButton}
             </View>
@@ -864,19 +881,17 @@ export default class TicketDetail extends Component {
     }
 
     return (
-      <View style={{ flex: 1, backgroundColor: LIST_BG }}>
+      <View style={{ flex: 1, backgroundColor: Colors.seBgLayout }}>
         {this._getToolbar(this.state.rowData)}
         <ScrollView showsVerticalScrollIndicator={false} style={[styles.wrapper, marginBottom]}>
-          <ViewShot style={{ flex: 1, backgroundColor: LIST_BG }} ref="viewShot" options={{ format: "jpg", quality: 0.9 }}>
-            {this._getAssetView()}
+          <ViewShot style={{ flex: 1, backgroundColor: Colors.seBgLayout }} ref="viewShot" options={{ format: "jpg", quality: 0.9 }}>
             {this._renderRejection()}
-            <View style={{ height: 1, backgroundColor: '#f2f2f2', marginLeft: 16 }} />
+            {this._getAssetView()}
             {this._getTaskView()}
-            <View style={{ height: 1, backgroundColor: '#f2f2f2', marginLeft: 16 }} />
             {/*{this._getDocumentsView()}*/}
             {this._getLogMessage()}
             {this._getIDView()}
-            <View style={{ height: 10, flex: 1, backgroundColor: LIST_BG }}>
+            <View style={{ height: 10, flex: 1, }}>
             </View>
           </ViewShot>
         </ScrollView>
@@ -906,7 +921,7 @@ var styles = StyleSheet.create({
     margin: 16,
     marginTop: 0,
     marginBottom: 13,
-    backgroundColor: 'white'
+    //backgroundColor: 'white'
   },
   bottom: {
     position: 'absolute',
@@ -928,6 +943,6 @@ var styles = StyleSheet.create({
   },
   wrapper: {
     flex: 1,
-    backgroundColor: 'transparent',
+    //backgroundColor: 'transparent',
   },
 });
